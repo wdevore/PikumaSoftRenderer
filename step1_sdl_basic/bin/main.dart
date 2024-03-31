@@ -42,7 +42,7 @@ int run() {
     sdlQuit();
   }
 
-  Model model = Model()..build();
+  Model model = Model()..buildCubeCloud();
 
   // ---------------------------------------------
   // main loop
@@ -84,6 +84,10 @@ int run() {
     rb.clear(window.renderer!);
 
     model.update();
+
+    rb.pixelColor = Colors.darkBlack32;
+    rb.drawGrid();
+
     rb.drawPoints(model.projPoints, Colors.yellow);
     // rb.pixelColor = Colors.darkBlack;
     // rb.drawGrid();

@@ -149,8 +149,6 @@ class RasterBuffer {
   }
 
   void drawPoints(List<Vector3> points, int color) {
-    pixelColor = palette.Colors.darkBlack;
-    drawGrid();
     pixelColor = color;
     for (Vector3 p in points) {
       drawRectangle(

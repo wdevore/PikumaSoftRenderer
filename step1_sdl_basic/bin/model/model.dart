@@ -4,19 +4,19 @@ class Model {
   final List<Vector3> points = [];
   final List<Vector3> projPoints = [];
 
-  final double fov_factor = 128.0;
+  final double fov_factor = 75.0;
 
   void update() {
     int i = 0;
     for (Vector3 p in points) {
       // Project point
-      Vector3 pp = orthoProject(p);
+      Vector3 pp = perspProject(p);
       projPoints[i] = pp;
       i++;
     }
   }
 
-  void build() {
+  void buildCubeCloud() {
     // Form a Cube 2 x 2 x 2
     for (var x = -1.0; x <= 1; x += 0.25) {
       for (var y = -1.0; y <= 1; y += 0.25) {
@@ -38,7 +38,14 @@ class Model {
 
   /// Perspective projection
   Vector3 perspProject(Vector3 point) {
-    Vector3 v = Vector3.zero();
+    double z = point.z == 0.0 ? 1.0 : point.z;
+
+    Vector3 v = Vector3.zero()
+      ..setValues(
+        (fov_factor * point.x) / z,
+        (fov_factor * point.y) / z,
+        point.z,
+      );
     return v;
   }
 }
