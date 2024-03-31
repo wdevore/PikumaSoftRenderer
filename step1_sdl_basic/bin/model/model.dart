@@ -4,7 +4,7 @@ class Model {
   final List<Vector3> points = [];
   final List<Vector3> projPoints = [];
 
-  final double fov_factor = 75.0;
+  final double fovFactor = 75.0;
 
   void update() {
     int i = 0;
@@ -32,7 +32,7 @@ class Model {
   /// Orthographic projection
   Vector3 orthoProject(Vector3 point) {
     Vector3 v = Vector3.zero()
-      ..setValues(fov_factor * point.x, fov_factor * point.y, point.z);
+      ..setValues(fovFactor * point.x, fovFactor * point.y, point.z);
     return v;
   }
 
@@ -42,8 +42,8 @@ class Model {
 
     Vector3 v = Vector3.zero()
       ..setValues(
-        (fov_factor * point.x) / z,
-        (fov_factor * point.y) / z,
+        (fovFactor * point.x) / z,
+        (fovFactor * point.y) / z,
         point.z,
       );
     return v;
