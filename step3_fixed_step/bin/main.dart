@@ -111,6 +111,8 @@ int run() {
     // Render: Display buffer
     // -------------------------------
     window.update(rb.texture);
+
+    sdlPollEvent(event);
   }
 
   running.callocFree();
