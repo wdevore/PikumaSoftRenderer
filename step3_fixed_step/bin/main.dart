@@ -82,7 +82,7 @@ int run() {
   int previousFrameTime = 0;
 
   while (running.value == 1) {
-    previousFrameTime = adjustFPS(previousFrameTime);
+    previousFrameTime = adjustFPS(previousFrameTime, event);
 
     // -------------------------------
     // Process input
@@ -111,8 +111,6 @@ int run() {
     // Render: Display buffer
     // -------------------------------
     window.update(rb.texture);
-
-    sdlPollEvent(event);
   }
 
   running.callocFree();
@@ -128,13 +126,15 @@ int run() {
 }
 
 // Using this method REQUIRES the usage of a event filter.
-int adjustFPS(int previousFrameTime) {
+int adjustFPS(int previousFrameTime, Pointer<SdlEvent> event) {
   // Wait some time until we reach the target frame time in milliseconds
   int timeToWait = gFrameTargetTime - (sdlGetTicks() - previousFrameTime);
 
   // Only delay execution if we are running too fast
   if (timeToWait > 0 && timeToWait <= gFrameTargetTime) {
     sdlDelay(timeToWait);
+    // Polling immediately after delay improves detecting events.
+    sdlPollEvent(event);
   }
 
   return sdlGetTicks();
