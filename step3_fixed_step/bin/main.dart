@@ -13,6 +13,26 @@ const scale = 1;
 const gFPS = 30;
 const gFrameTargetTime = 1000 ~/ gFPS;
 
+// This filter is needed because calling sdlDelay lock the thread
+// while delaying which prevents any input polling. This causes
+// keypress events to be lost making it diffult to exit the app.
+int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
+  switch (event.type) {
+    case SDL_QUIT:
+      running.value = 0;
+      break;
+    case SDL_KEYDOWN:
+      var keys = sdlGetKeyboardState(nullptr);
+      // aka backtick '`' key
+      if (keys[SDL_SCANCODE_GRAVE] != 0) {
+        running.value = 0;
+      }
+    default:
+      break;
+  }
+  return 1;
+}
+
 int main() {
   return run();
 }
@@ -52,40 +72,23 @@ int run() {
   // ---------------------------------------------
   var event = calloc<SdlEvent>();
 
-  // var running = calloc<Uint8>();
-  // running.value = 1;
-  // sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
-
-  var running = true;
+  var running = calloc<Uint8>();
+  running.value = 1;
+  sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
 
   // Set camera position by moving away from origin
   model.camera.setValues(0.0, 0.0, -5.0);
 
   int previousFrameTime = 0;
 
-  while (running) {
-    // previousFrameTime = adjustFPS(previousFrameTime);
+  while (running.value == 1) {
+    previousFrameTime = adjustFPS(previousFrameTime);
 
     // -------------------------------
     // Process input
     // -------------------------------
-    int pollState = sdlPollEvent(event);
-
-    if (pollState > 0) {
-      switch (event.type) {
-        case SDL_QUIT:
-          running = false;
-          break;
-        case SDL_KEYDOWN:
-          var keys = sdlGetKeyboardState(nullptr);
-          // aka backtick '`' key
-          if (keys[SDL_SCANCODE_GRAVE] != 0) {
-            running = false;
-          }
-        default:
-          break;
-      }
-    }
+    // We must poll so that the filter works correctly
+    sdlPollEvent(event);
 
     // -------------------------------
     // Update: Draw to custom texture buffer
@@ -110,7 +113,7 @@ int run() {
     window.update(rb.texture);
   }
 
-  // running.callocFree();
+  running.callocFree();
   event.callocFree();
 
   rb.destroy();
@@ -122,7 +125,7 @@ int run() {
   return 0;
 }
 
-// TODO starves input
+// Using this method REQUIRES the usage of a event filter.
 int adjustFPS(int previousFrameTime) {
   // Wait some time until we reach the target frame time in milliseconds
   int timeToWait = gFrameTargetTime - (sdlGetTicks() - previousFrameTime);
