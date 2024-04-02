@@ -2,6 +2,8 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:sdl2/sdl2.dart';
 import 'model/model.dart';
+import 'model/mesh.dart';
+import 'model/object_cube.dart';
 import 'palette/colors.dart';
 import 'raster/raster_buffer.dart';
 import 'window.dart';
@@ -13,7 +15,7 @@ const scale = 1;
 const gFPS = 30;
 const gFrameTargetTime = 1000 ~/ gFPS;
 
-// This filter is needed because calling sdlDelay lock the thread
+// This filter is needed because calling sdlDelay locks the thread
 // while delaying which prevents any input polling. This causes
 // keypress events to be lost making it diffult to exit the app.
 int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
@@ -81,6 +83,8 @@ int run() {
 
   int previousFrameTime = 0;
 
+  Mesh cube = model.cube;
+
   while (running.value == 1) {
     previousFrameTime = adjustFPS(previousFrameTime, event);
 
@@ -102,8 +106,10 @@ int run() {
     rb.pixelColor = Colors.darkBlack32;
     rb.drawGrid();
 
-    rb.drawPoints(model.cube.projVertices, Colors.yellow);
-    rb.pixelColor = Colors.yellow;
+    rb.pixelColor = Colors.blue;
+    rb.drawLines(cube.faces, cube.projVertices);
+
+    rb.drawPoints(cube.projVertices, Colors.yellow);
 
     rb.end();
 

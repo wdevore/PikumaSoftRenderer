@@ -8,6 +8,7 @@ import 'package:ffi/ffi.dart';
 import 'package:sdl2/sdl2.dart';
 import 'package:vector_math/vector_math.dart';
 
+import '../model/face.dart';
 import '../palette/colors.dart' as palette;
 
 class RasterBuffer {
@@ -26,10 +27,10 @@ class RasterBuffer {
   Pointer<Uint32>? bufferAddr;
   Pointer<Uint32>? posOffset;
 
-  Rectangle<double>? clearRect;
   late Uint32List textureAsList;
 
   int pointSize = 2;
+  Vector3 center = Vector3.zero();
 
   int create(Pointer<SdlRenderer> renderer, int width, int height) {
     this.width = width;
@@ -43,14 +44,9 @@ class RasterBuffer {
       return -1;
     }
 
-    clearRect = Rectangle<double>(
-      0,
-      0,
-      (width - 1).toDouble(),
-      (height - 1).toDouble(),
-    );
-
     size = width * height;
+
+    center.setValues(width / 2, height / 2, 0); // Shift to center
 
     return 0;
   }
@@ -64,21 +60,7 @@ class RasterBuffer {
   void end() => texture?.unlock();
 
   void clear(Pointer<SdlRenderer> renderer) {
-    // Slow manual iteration
-    // for (var i = 0; i < width * height - 1; i++) {
-    //   posOffset = bufferAddr! + i;
-    //   posOffset?.value = clearColor;
-    // }
-
-    // A bit faster
     textureAsList.fillRange(0, size - 1, clearColor);
-
-    // Doesn't work because this buffer uses pointers.
-    // Kept for posterity.
-    // renderer.setTarget(texture!);
-    // renderer.setDrawColor(0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
-    // renderer.fillRect(clearRect);
-    // renderer.setTarget(nullptr);
   }
 
   void setPixelXY(int color, int x, int y) {
@@ -154,11 +136,24 @@ class RasterBuffer {
     pixelColor = color;
     for (Vector3 p in points) {
       drawRectangle(
-        p.x.toInt() + width ~/ 2,
-        p.y.toInt() + height ~/ 2,
+        p.x.toInt() + center.x.toInt(),
+        p.y.toInt() + center.y.toInt(),
         pointSize,
         pointSize,
       );
+    }
+  }
+
+  // Draw outline of faces. It doesn't understand shared edges.
+  void drawLines(List<Face> faces, List<Vector3> vertices) {
+    for (var face in faces) {
+      Vector3 a = vertices[face.a - 1] + center;
+      Vector3 b = vertices[face.b - 1] + center;
+      Vector3 c = vertices[face.c - 1] + center;
+
+      drawDDALine(a.x.toInt(), a.y.toInt(), b.x.toInt(), b.y.toInt());
+      drawDDALine(b.x.toInt(), b.y.toInt(), c.x.toInt(), c.y.toInt());
+      drawDDALine(c.x.toInt(), c.y.toInt(), a.x.toInt(), a.y.toInt());
     }
   }
 
@@ -174,6 +169,7 @@ class RasterBuffer {
 
     double currentX = x0.toDouble();
     double currentY = y0.toDouble();
+
     for (int i = 0; i <= longestSideLength; i++) {
       setPixel(currentX.round(), currentY.round());
       currentX += xInc;

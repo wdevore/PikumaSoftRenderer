@@ -2,42 +2,40 @@ import 'dart:math';
 
 import 'package:vector_math/vector_math.dart';
 
-import 'object_3d.dart';
+import 'mesh.dart';
 import 'object_cube.dart';
 
 class Model {
-  final double fovFactor = 640.0;
+  double fovFactor = 640.0;
   final Vector3 camera = Vector3.zero();
 
   final Vector3 v1 = Vector3.zero();
   final Vector3 v2 = Vector3.zero();
 
-  final Vector3 cubeOrientation = Vector3.zero();
-
-  final Object3D cube = Cube();
+  final Mesh cube = Cube();
 
   void update() {
-    cubeOrientation.x += 0.01;
-    cubeOrientation.y += 0.01;
-    cubeOrientation.z += 0.01;
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    cube.rotation.z += 0.01;
 
     // Iterate vertices for transformations.
     int i = 0;
-    List<Vector3> projVertices = cube.projVertices;
+    List<Vector3> pv = cube.projVertices;
 
     for (Vector3 v in cube.vertices) {
       // Preserve original point
-      projVertices[i].setFrom(v);
+      pv[i].setFrom(v);
 
-      rotateAboutX(projVertices[i], cubeOrientation.x);
-      rotateAboutY(projVertices[i], cubeOrientation.y);
-      rotateAboutZ(projVertices[i], cubeOrientation.z);
+      rotateAboutX(pv[i], cube.rotation.x);
+      rotateAboutY(pv[i], cube.rotation.y);
+      rotateAboutZ(pv[i], cube.rotation.z);
 
       // Moving object in the opposite direction
-      projVertices[i].z -= camera.z;
+      pv[i].sub(camera);
 
       // Project point
-      perspProject(projVertices[i]);
+      perspProject(pv[i]);
 
       i++;
     }
@@ -62,6 +60,7 @@ class Model {
 
   /// Orthographic projection
   orthoProject(Vector3 point) {
+    fovFactor = 128.0;
     point.setValues(
       (fovFactor * point.x),
       (fovFactor * point.y),
@@ -71,6 +70,7 @@ class Model {
 
   /// Perspective projection
   void perspProject(Vector3 point) {
+    fovFactor = 640.0;
     double z = point.z == 0.0 ? 1.0 : point.z;
 
     point.setValues(

@@ -1,9 +1,9 @@
 import 'package:vector_math/vector_math.dart';
 
 import 'face.dart';
-import 'object_3d.dart';
+import 'mesh.dart';
 
-class Cube extends Object3D {
+class Cube extends Mesh {
   @override
   void build() {
     vertices.add(Vector3(-1, -1, -1));
