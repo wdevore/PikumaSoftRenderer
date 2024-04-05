@@ -4,7 +4,6 @@ import 'package:sdl2/sdl2.dart';
 import 'model/mesh_generic.dart';
 import 'model/model.dart';
 import 'model/mesh.dart';
-import 'model/object_cube.dart';
 import 'palette/colors.dart';
 import 'raster/raster_buffer.dart';
 import 'window.dart';
@@ -68,7 +67,7 @@ int run() {
     sdlQuit();
   }
 
-  Model model = Model();
+  Model model = Model()..initialize();
 
   // ---------------------------------------------
   // main loop
@@ -80,13 +79,15 @@ int run() {
   sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
 
   // Set camera position by moving away from origin
-  model.camera.setValues(0.0, 0.0, -5.0);
+  // model.camera.setValues(0.0, 0.0, -5.0);
+  // Instead keep camera at origin and move objects instead
+  model.camera.setValues(0.0, 0.0, 0.0);
 
   int previousFrameTime = 0;
 
   Mesh cube = GenericMesh();
   try {
-    cube.build('step3_fixed_step/bin/assets', 'cube.obj');
+    cube.build('step4_face_culling/bin/assets', 'cube.obj');
     model.meshObj = cube;
   } on MeshException catch (me) {
     print(me);
@@ -114,7 +115,7 @@ int run() {
     rb.pixelColor = Colors.darkBlack32;
     rb.drawGrid();
 
-    rb.pixelColor = Colors.blue;
+    rb.pixelColor = Colors.red;
     if (cube.faces.isNotEmpty) {
       rb.drawLines(cube.faces, cube.projVertices);
     }

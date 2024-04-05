@@ -23,27 +23,27 @@ class Cube extends Mesh {
     // Faces are for rendering filled in CW order
 
     // Front
-    faces.add(Face(1, 2, 3));
-    faces.add(Face(1, 3, 4));
+    faces.add(Face.set(1, 2, 3));
+    faces.add(Face.set(1, 3, 4));
 
     // Right
-    faces.add(Face(4, 3, 5));
-    faces.add(Face(4, 5, 6));
+    faces.add(Face.set(4, 3, 5));
+    faces.add(Face.set(4, 5, 6));
 
     // Back
-    faces.add(Face(6, 5, 7));
-    faces.add(Face(6, 7, 8));
+    faces.add(Face.set(6, 5, 7));
+    faces.add(Face.set(6, 7, 8));
 
     // Left
-    faces.add(Face(8, 7, 2));
-    faces.add(Face(8, 2, 1));
+    faces.add(Face.set(8, 7, 2));
+    faces.add(Face.set(8, 2, 1));
 
     // Top
-    faces.add(Face(2, 7, 5));
-    faces.add(Face(2, 5, 3));
+    faces.add(Face.set(2, 7, 5));
+    faces.add(Face.set(2, 5, 3));
 
     // Bottom
-    faces.add(Face(6, 8, 1));
-    faces.add(Face(6, 1, 4));
+    faces.add(Face.set(6, 8, 1));
+    faces.add(Face.set(6, 1, 4));
   }
 }

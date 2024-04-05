@@ -5,4 +5,6 @@ class Face {
   int c = 0;
 
   Face(this.a, this.b, this.c);
+
+  factory Face.zero() => Face(0, 0, 0);
 }

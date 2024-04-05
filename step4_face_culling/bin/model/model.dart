@@ -14,7 +14,7 @@ class Model {
 
   late Mesh? meshObj;
 
-  List<Face> visibleFaces = [];
+  void initialize() {}
 
   // void build() {
   // // Form a Cube point cloud 2 x 2 x 2
@@ -41,6 +41,7 @@ class Model {
     // Iterate vertices for transformations.
     int i = 0;
     List<Vector3> pv = meshObj!.projVertices;
+    v1.setValues(0.0, 0.0, 5.0); // Move object away
 
     // ----------------------------------------------------
     // Transform vertices
@@ -54,14 +55,36 @@ class Model {
       rotateAboutZ(pv[i], meshObj!.rotation.z);
 
       // Moving object in the opposite direction
-      pv[i].sub(camera);
+      // pv[i].sub(camera);
+      // Camera is now at the origin
+      pv[i].add(v1); // Push object away from camera
 
       i++;
     }
 
     // ----------------------------------------------------
-    // Project
+    // Cull back faces
     // ----------------------------------------------------
+    // * Find vectors b-a and c-a
+    // * Take cross product and find perpendicular normal N
+    // * Find camera ray vector by subtracting camera - a
+    // * Take dot product between N and ray
+    // * if dot product < 0 then cull face (don't add to list)
+
+    // ----------------------------------------------------
+    // TODO Project only vertices that associated with a visible face.
+    // TODO We don't want to project the same vertex twice.
+    // ----------------------------------------------------
+    for (Face face in meshObj!.faces) {
+      Vector3 a = pv[face.a.i - 1];
+      Vector3 b = pv[face.b.i - 1];
+      Vector3 c = pv[face.c.i - 1];
+      Vector3 n = face.calcNormal(a, b, c);
+      Vector3 los = camera - a;
+      double dot = n.dot(los);
+      face.visible = dot < 0;
+    }
+
     for (Vector3 v in pv) {
       // Project point
       perspProject(v);
