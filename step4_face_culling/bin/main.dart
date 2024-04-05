@@ -15,6 +15,9 @@ const scale = 1;
 const gFPS = 30;
 const gFrameTargetTime = 1000 ~/ gFPS;
 
+int renderMode = 1;
+int prevRenderMode = 0;
+
 // This filter is needed because calling sdlDelay locks the thread
 // while delaying which prevents any input polling. This causes
 // keypress events to be lost making it diffult to exit the app.
@@ -28,6 +31,24 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
       // aka backtick '`' key
       if (keys[SDL_SCANCODE_GRAVE] != 0) {
         running.value = 0;
+      } else if (keys[SDL_SCANCODE_1] != 0) {
+        // Display wireframe and vertex points
+        renderMode = 1;
+      } else if (keys[SDL_SCANCODE_2] != 0) {
+        // Display wireframe only
+        renderMode = 2;
+      } else if (keys[SDL_SCANCODE_3] != 0) {
+        // Display filled only
+        renderMode = 3;
+      } else if (keys[SDL_SCANCODE_4] != 0) {
+        // Display filled and wireframe overlay
+        renderMode = 4;
+      } else if (keys[SDL_SCANCODE_C] != 0) {
+        // Enable face culling
+        renderMode = 5;
+      } else if (keys[SDL_SCANCODE_D] != 0) {
+        // Disable face culling
+        renderMode = 6;
       }
     default:
       break;
@@ -86,6 +107,8 @@ int run() {
   int previousFrameTime = 0;
 
   Mesh cube = GenericMesh();
+  cube.initialize();
+
   try {
     cube.build('step4_face_culling/bin/assets', 'cube.obj');
     model.meshObj = cube;
@@ -115,12 +138,41 @@ int run() {
     rb.pixelColor = Colors.darkBlack32;
     rb.drawGrid();
 
-    rb.pixelColor = Colors.red;
-    if (cube.faces.isNotEmpty) {
-      rb.drawLines(cube.faces, cube.projVertices);
+    if (renderMode == 5) {
+      cube.cullingEnabled = true;
+      renderMode = prevRenderMode;
+    }
+    if (renderMode == 6) {
+      cube.cullingEnabled = false;
+      renderMode = prevRenderMode;
     }
 
-    rb.drawPoints(cube.projVertices, Colors.yellow);
+    if (cube.faces.isNotEmpty) {
+      if (renderMode == 3) {
+        rb.pixelColor = Colors.orange;
+        rb.fillTriangles(cube.faces, cube.pvs);
+        prevRenderMode = renderMode;
+      }
+
+      if (renderMode == 4) {
+        rb.pixelColor = Colors.orange;
+        rb.fillTriangles(cube.faces, cube.pvs);
+        prevRenderMode = renderMode;
+      }
+
+      if (renderMode == 2 || renderMode == 4) {
+        rb.pixelColor = Colors.yellow;
+        rb.drawLines(cube.faces, cube.pvs);
+        prevRenderMode = renderMode;
+      }
+
+      if (renderMode == 1) {
+        rb.pixelColor = Colors.yellow;
+        rb.drawLines(cube.faces, cube.pvs);
+        rb.drawPoints(cube.pvs, Colors.red);
+        prevRenderMode = renderMode;
+      }
+    }
 
     rb.end();
 

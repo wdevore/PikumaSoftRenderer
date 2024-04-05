@@ -83,7 +83,7 @@ class GenericMesh extends Mesh {
 
     // Expand projected vertices bucket to match vertices count.
     for (var i = 0; i < vertices.length; i++) {
-      projVertices.add(Vector3.zero());
+      pvs.add(Vector3.zero());
     }
   }
 }
