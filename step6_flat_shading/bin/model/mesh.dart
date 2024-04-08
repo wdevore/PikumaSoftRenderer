@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:vector_math/vector_math.dart';
 
-import '../palette/colors.dart' as palette;
 import '../palette/light.dart';
 import 'face.dart';
 
