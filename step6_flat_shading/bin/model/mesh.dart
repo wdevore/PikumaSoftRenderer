@@ -175,8 +175,8 @@ abstract class Mesh {
       v.x *= sW;
       v.y *= sH;
 
-      // Apps like Blender think of +Y as up but our SDL buffer
-      // has +y as down.
+      // Apps like Blender think of +Y as up but our SDL screen buffer
+      // has +y as down. So we flip Y to match our expectations.
       v.y *= -1.0;
 
       // Translate to center
