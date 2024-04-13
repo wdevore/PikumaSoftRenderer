@@ -1,5 +1,3 @@
-import 'dart:math';
-
 abstract class Texture {
   int width = 0;
   int height = 0;
@@ -14,7 +12,7 @@ abstract class Texture {
     int cell = y * width + x;
 
     if (cell > 4095) {
-      print(cell);
+      throw Exception('Exceeded bounds: $cell, <$x, $y>');
     }
 
     int color = texture[cell];
