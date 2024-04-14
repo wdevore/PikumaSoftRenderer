@@ -2,7 +2,6 @@
 // This buffer must be blitted to another buffer, for example,
 // PNG or display buffer (like SDL).
 import 'dart:ffi';
-import 'dart:math';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:sdl2/sdl2.dart';

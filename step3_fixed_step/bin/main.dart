@@ -4,7 +4,6 @@ import 'package:sdl2/sdl2.dart';
 import 'model/mesh_generic.dart';
 import 'model/model.dart';
 import 'model/mesh.dart';
-import 'model/object_cube.dart';
 import 'palette/colors.dart';
 import 'raster/raster_buffer.dart';
 import 'window.dart';
