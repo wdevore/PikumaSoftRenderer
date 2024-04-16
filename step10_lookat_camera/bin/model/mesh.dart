@@ -64,7 +64,7 @@ abstract class Mesh {
     // ----------------------------------------------------
     Matrix4 rotM = Matrix4.identity();
     // rotM.rotateX(rotation.x);
-    // rotM.rotateY(rotation.y);
+    rotM.rotateY(rotation.y);
     // rotM.rotateZ(rotation.z);
 
     Matrix4 scaleM = Matrix4.identity();
@@ -203,7 +203,6 @@ abstract class Mesh {
       // Translate to center
       v.x += sW;
       v.y += sH;
-      // print(v);
     }
   }
 

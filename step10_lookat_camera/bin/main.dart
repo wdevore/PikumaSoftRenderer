@@ -29,7 +29,7 @@ enum RenderMode {
   texturedAndWireframe,
 }
 
-RenderMode renderMode = RenderMode.textured;
+RenderMode renderMode = RenderMode.filled;
 
 bool paused = false;
 bool lightingEnabled = false;
@@ -74,7 +74,7 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
       } else if (keys[SDL_SCANCODE_6] != 0) {
         // Display texture filled and wireframe overlay
         renderMode = RenderMode.texturedAndWireframe;
-      } else if (keys[SDL_SCANCODE_L] != 0) {
+      } else if (keys[SDL_SCANCODE_C] != 0) {
         // Enable face culling
         faceCullingEnabled = true;
       } else if (keys[SDL_SCANCODE_O] != 0) {
@@ -83,10 +83,12 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
       } else if (keys[SDL_SCANCODE_P] != 0) {
         paused = !paused;
       } else if (keys[SDL_SCANCODE_K] != 0) {
+        print('Disabled lighting');
         // Disable face lighting
         lightingEnabled = false;
       } else if (keys[SDL_SCANCODE_L] != 0) {
-        // Disable face lighting
+        print('Enabled lighting');
+        // Enable face lighting
         lightingEnabled = true;
       } else if (keys[SDL_SCANCODE_G] != 0) {
         gridEnabled = !gridEnabled;
@@ -160,7 +162,7 @@ int run() {
 
   int previousFrameTime = 0;
 
-  // Mesh cube = GenericMesh();
+  // Mesh mesh = GenericMesh();
   Mesh mesh = Cube();
   mesh.initialize(gWinWidth, gWinHeight);
 
@@ -178,7 +180,8 @@ int run() {
   BrickTexture brickTex = BrickTexture()
     ..initialize(assetPath, 'brick_texture.tex');
 
-  Camera camera = Camera()..position.setValues(0.0, 0.0, 10.0);
+  // Back the camera away from the origin down the -Z axis
+  Camera camera = Camera()..position.setValues(0.0, 0.0, -5.0);
 
   // Used to control constint animation rates regardless of
   // FPS or frame render time.

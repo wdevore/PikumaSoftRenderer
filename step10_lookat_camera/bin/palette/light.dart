@@ -6,6 +6,7 @@ class Light {
   Vector3 direction = Vector3.zero();
 
   void initialize() {
+    // Light point down the +Z axis
     direction.setValues(0.0, 0.0, 1.0);
   }
 

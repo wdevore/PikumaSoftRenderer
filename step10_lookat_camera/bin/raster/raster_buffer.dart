@@ -8,6 +8,7 @@ import 'package:ffi/ffi.dart';
 import 'package:sdl2/sdl2.dart';
 import 'package:vector_math/vector_math.dart';
 
+import '../main.dart';
 import '../model/face.dart';
 import '../palette/colors.dart' as palette;
 import '../textures/texture.dart';
