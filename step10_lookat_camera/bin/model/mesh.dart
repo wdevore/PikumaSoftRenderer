@@ -55,17 +55,17 @@ abstract class Mesh {
 
   // fovFactor is no longer used at this point
   void update(Vector3 translation, Camera camera, double deltaTime) {
-    // rotation.x += rotationInc.x * deltaTime;
-    // rotation.y += rotationInc.y * deltaTime;
-    // rotation.z += rotationInc.z * deltaTime;
+    rotation.x += rotationInc.x * deltaTime;
+    rotation.y += rotationInc.y * deltaTime;
+    rotation.z += rotationInc.z * deltaTime;
 
     // ----------------------------------------------------
     // Transform vertices
     // ----------------------------------------------------
     Matrix4 rotM = Matrix4.identity();
-    rotM.rotateX(rotation.x);
-    rotM.rotateY(rotation.y);
-    rotM.rotateZ(rotation.z);
+    // rotM.rotateX(rotation.x);
+    // rotM.rotateY(rotation.y);
+    // rotM.rotateZ(rotation.z);
 
     Matrix4 scaleM = Matrix4.identity();
     // scale.x += 0.002*deltaTime;
@@ -97,11 +97,10 @@ abstract class Mesh {
     // worldM = rotM * worldM;
     // worldM = trxM * worldM;
 
-    // camera.position.x += 0.05*deltaTime;
-    // camera.position.y += 0.05*deltaTime;
-    Vector3 target = Vector3(0.0, 0.0, 5.0);
-    Vector3 up = Vector3(0.0, 1.0, 0.0);
-    Matrix4 viewMatrix = camera.lookAt(camera.position, target, up);
+    // Vector3 target = Vector3(0.0, 0.0, 5.0);
+    // Vector3 up = Vector3(0.0, 1.0, 0.0);
+    // Matrix4 viewMatrix = camera.lookAt(camera.position, target, up);
+    Matrix4 viewMatrix = camera.update();
 
     int i = 0;
 

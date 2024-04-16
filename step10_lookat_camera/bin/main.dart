@@ -16,7 +16,7 @@ const dimensionScale = 5;
 const gWinWidth = 200 * dimensionScale;
 const gWinHeight = 100 * dimensionScale;
 const scale = 1;
-const gFPS = 30;
+const gFPS = 60;
 const gFrameTargetTime = 1000 ~/ gFPS;
 
 enum RenderMode {
@@ -36,6 +36,9 @@ bool lightingEnabled = false;
 bool faceCullingEnabled = true;
 bool gridEnabled = false;
 bool zBufferEnabled = false;
+
+// 1 = up, 2 = down
+int cameraControl = 0;
 
 // This filter is needed because calling sdlDelay locks the thread
 // while delaying which prevents any input polling. This causes
@@ -71,10 +74,10 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
       } else if (keys[SDL_SCANCODE_6] != 0) {
         // Display texture filled and wireframe overlay
         renderMode = RenderMode.texturedAndWireframe;
-      } else if (keys[SDL_SCANCODE_C] != 0) {
+      } else if (keys[SDL_SCANCODE_L] != 0) {
         // Enable face culling
         faceCullingEnabled = true;
-      } else if (keys[SDL_SCANCODE_D] != 0) {
+      } else if (keys[SDL_SCANCODE_O] != 0) {
         // Disable face culling
         faceCullingEnabled = false;
       } else if (keys[SDL_SCANCODE_P] != 0) {
@@ -89,6 +92,19 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
         gridEnabled = !gridEnabled;
       } else if (keys[SDL_SCANCODE_Z] != 0) {
         zBufferEnabled = !zBufferEnabled;
+      } else if (keys[SDL_SCANCODE_UP] != 0) {
+        // ---- FPS camera ----
+        cameraControl = 1; // arrow up
+      } else if (keys[SDL_SCANCODE_DOWN] != 0) {
+        cameraControl = 2; // arrow down
+      } else if (keys[SDL_SCANCODE_A] != 0) {
+        cameraControl = 3; // Yaw left (look toward left)
+      } else if (keys[SDL_SCANCODE_D] != 0) {
+        cameraControl = 4; // Yaw right (look toward right)
+      } else if (keys[SDL_SCANCODE_W] != 0) {
+        cameraControl = 5; // Forward velocity
+      } else if (keys[SDL_SCANCODE_S] != 0) {
+        cameraControl = 6; // Backward velocity
       }
 
     default:
@@ -142,11 +158,6 @@ int run() {
   running.value = 1;
   sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
 
-  // Set camera position by moving away from origin
-  // model.camera.setValues(0.0, 0.0, -5.0);
-  // Instead keep camera at origin and move objects instead
-  // DEPRECATED: model.camera.setValues(0.0, 0.0, 0.0);
-
   int previousFrameTime = 0;
 
   // Mesh cube = GenericMesh();
@@ -189,6 +200,30 @@ int run() {
     // -------------------------------
     // We must poll so that the filter works correctly
     sdlPollEvent(event);
+
+    if (cameraControl > 0) {
+      switch (cameraControl) {
+        case 1:
+          camera.moveUp(3.0, deltaTime);
+          break;
+        case 2:
+          camera.moveDown(3.0, deltaTime);
+          break;
+        case 3:
+          camera.rotateLeft(1.0, deltaTime); //a
+          break;
+        case 4:
+          camera.rotateRight(1.0, deltaTime); // d
+          break;
+        case 5:
+          camera.moveForward(5.0, deltaTime); // w
+          break;
+        case 6:
+          camera.moveBackward(5.0, deltaTime); // s
+          break;
+      }
+      cameraControl = 0;
+    }
 
     // -------------------------------
     // Update: Draw to custom texture buffer

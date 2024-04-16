@@ -5,7 +5,6 @@ import 'mesh.dart';
 
 class Model {
   double fovFactor = 640.0;
-  // final Vector3 camera = Vector3.zero();
 
   final Vector3 v1 = Vector3.zero();
   final Vector3 v2 = Vector3.zero();
