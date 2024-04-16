@@ -31,14 +31,25 @@ enum RenderMode {
 
 RenderMode renderMode = RenderMode.filled;
 
+enum CameraControl {
+  none,
+  up, // up arrow
+  down, // down arrow
+  left, // a
+  right, // d
+  forward, // w
+  backward, // s
+  rotateRight, // left arrow
+  rotateLeft, // right arrow
+}
+
 bool paused = false;
 bool lightingEnabled = false;
 bool faceCullingEnabled = true;
 bool gridEnabled = false;
 bool zBufferEnabled = false;
 
-// 1 = up, 2 = down
-int cameraControl = 0;
+CameraControl cameraControl = CameraControl.none;
 
 // This filter is needed because calling sdlDelay locks the thread
 // while delaying which prevents any input polling. This causes
@@ -96,17 +107,22 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
         zBufferEnabled = !zBufferEnabled;
       } else if (keys[SDL_SCANCODE_UP] != 0) {
         // ---- FPS camera ----
-        cameraControl = 1; // arrow up
+        cameraControl = CameraControl.up; // arrow up
       } else if (keys[SDL_SCANCODE_DOWN] != 0) {
-        cameraControl = 2; // arrow down
+        cameraControl = CameraControl.down; // arrow down
       } else if (keys[SDL_SCANCODE_A] != 0) {
-        cameraControl = 3; // Yaw left (look toward left)
+        cameraControl = CameraControl.rotateLeft; // Yaw left (look toward left)
       } else if (keys[SDL_SCANCODE_D] != 0) {
-        cameraControl = 4; // Yaw right (look toward right)
+        cameraControl =
+            CameraControl.rotateRight; // Yaw right (look toward right)
       } else if (keys[SDL_SCANCODE_W] != 0) {
-        cameraControl = 5; // Forward velocity
+        cameraControl = CameraControl.forward; // Forward velocity
       } else if (keys[SDL_SCANCODE_S] != 0) {
-        cameraControl = 6; // Backward velocity
+        cameraControl = CameraControl.backward; // Backward velocity
+      } else if (keys[SDL_SCANCODE_LEFT] != 0) {
+        cameraControl = CameraControl.left;
+      } else if (keys[SDL_SCANCODE_RIGHT] != 0) {
+        cameraControl = CameraControl.right;
       }
 
     default:
@@ -204,28 +220,37 @@ int run() {
     // We must poll so that the filter works correctly
     sdlPollEvent(event);
 
-    if (cameraControl > 0) {
+    if (cameraControl != CameraControl.none) {
       switch (cameraControl) {
-        case 1:
+        case CameraControl.up:
           camera.moveUp(3.0, deltaTime);
           break;
-        case 2:
+        case CameraControl.down:
           camera.moveDown(3.0, deltaTime);
           break;
-        case 3:
+        case CameraControl.rotateLeft:
           camera.rotateLeft(1.0, deltaTime); //a
           break;
-        case 4:
+        case CameraControl.rotateRight:
           camera.rotateRight(1.0, deltaTime); // d
           break;
-        case 5:
+        case CameraControl.forward:
           camera.moveForward(5.0, deltaTime); // w
           break;
-        case 6:
+        case CameraControl.backward:
           camera.moveBackward(5.0, deltaTime); // s
           break;
+        case CameraControl.left:
+          camera.slideLeft(3.0, deltaTime);
+          break;
+        case CameraControl.right:
+          camera.slideRight(3.0, deltaTime);
+          break;
+        default:
+          cameraControl = CameraControl.none;
+          break;
       }
-      cameraControl = 0;
+      cameraControl = CameraControl.none;
     }
 
     // -------------------------------

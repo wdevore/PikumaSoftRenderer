@@ -11,11 +11,19 @@ class Camera {
   static const movementSpeed = 3.0;
 
   void moveUp(double amount, double deltaTime) {
-    position.y -= slideSpeed * deltaTime;
+    position.y -= movementSpeed * deltaTime;
   }
 
   void moveDown(double amount, double deltaTime) {
-    position.y += slideSpeed * deltaTime;
+    position.y += movementSpeed * deltaTime;
+  }
+
+  void slideLeft(double amount, double deltaTime) {
+    position.x += slideSpeed * deltaTime;
+  }
+
+  void slideRight(double amount, double deltaTime) {
+    position.x -= slideSpeed * deltaTime;
   }
 
   void rotateLeft(double radPerSec, double deltaTime) {
@@ -28,12 +36,12 @@ class Camera {
 
   void moveForward(double amount, double deltaTime) {
     forwardVelocity = direction.scaled(amount * deltaTime);
-    position = position - forwardVelocity;
+    position = position + forwardVelocity;
   }
 
   void moveBackward(double amount, double deltaTime) {
     forwardVelocity = direction.scaled(amount * deltaTime);
-    position = position + forwardVelocity;
+    position = position - forwardVelocity;
   }
 
   Matrix4 update() {
