@@ -111,18 +111,18 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
       } else if (keys[SDL_SCANCODE_DOWN] != 0) {
         cameraControl = CameraControl.down; // arrow down
       } else if (keys[SDL_SCANCODE_A] != 0) {
-        cameraControl = CameraControl.rotateLeft; // Yaw left (look toward left)
+        cameraControl = CameraControl.left;
       } else if (keys[SDL_SCANCODE_D] != 0) {
-        cameraControl =
-            CameraControl.rotateRight; // Yaw right (look toward right)
+        cameraControl = CameraControl.right;
       } else if (keys[SDL_SCANCODE_W] != 0) {
         cameraControl = CameraControl.forward; // Forward velocity
       } else if (keys[SDL_SCANCODE_S] != 0) {
         cameraControl = CameraControl.backward; // Backward velocity
       } else if (keys[SDL_SCANCODE_LEFT] != 0) {
-        cameraControl = CameraControl.left;
+        cameraControl = CameraControl.rotateLeft; // Yaw left (look toward left)
       } else if (keys[SDL_SCANCODE_RIGHT] != 0) {
-        cameraControl = CameraControl.right;
+        cameraControl =
+            CameraControl.rotateRight; // Yaw right (look toward right)
       }
 
     default:
