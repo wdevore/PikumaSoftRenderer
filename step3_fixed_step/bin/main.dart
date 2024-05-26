@@ -32,6 +32,13 @@ int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
     default:
       break;
   }
+
+  // ByteBuffer buffer = Uint32List(1).buffer;
+  // ByteData bdata = ByteData.view(buffer);
+  // bdata.setUint32(0, 1);
+
+  // final rVal = calloc<Int32>();
+
   return 1;
 }
 
@@ -76,7 +83,7 @@ int run() {
 
   var running = calloc<Uint8>();
   running.value = 1;
-  sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
+  // sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
 
   // Set camera position by moving away from origin
   model.camera.setValues(0.0, 0.0, -5.0);
@@ -99,7 +106,10 @@ int run() {
     // Process input
     // -------------------------------
     // We must poll so that the filter works correctly
-    sdlPollEvent(event);
+    while (sdlPollEvent(event) == 1) {
+      running.value = _pollEvents(event);
+      // print('running ${running.value}');
+    }
 
     // -------------------------------
     // Update: Draw to custom texture buffer
@@ -113,9 +123,19 @@ int run() {
     rb.pixelColor = Colors.darkBlack32;
     rb.drawGrid();
 
+    while (sdlPollEvent(event) == 1) {
+      running.value = _pollEvents(event);
+      // print('running ${running.value}');
+    }
+
     rb.pixelColor = Colors.blue;
     if (cube.faces.isNotEmpty) {
       rb.drawLines(cube.faces, cube.projVertices);
+    }
+
+    while (sdlPollEvent(event) == 1) {
+      running.value = _pollEvents(event);
+      // print('running ${running.value}');
     }
 
     rb.drawPoints(cube.projVertices, Colors.yellow);
@@ -138,6 +158,30 @@ int run() {
   sdlQuit();
 
   return 0;
+}
+
+int _pollEvents(Pointer<SdlEvent> event) {
+  // sdlPollEvent(event);
+  // print('event type: ${event.type}');
+  switch (event.type) {
+    case SDL_QUIT:
+      return 0;
+    case SDL_TEXTINPUT:
+      // print('key down');
+      var keys = sdlGetKeyboardState(nullptr);
+      // int key = event.key.keysym[0].sym;
+      // print(key);
+      // int x = keys[SDL_SCANCODE_GRAVE];
+      // print('x: $x');
+      // aka backtick '`' key
+      // print('keys: $keys[SDL_SCANCODE_GRAVE]');
+      if (keys[SDL_SCANCODE_GRAVE] != 0) {
+        return 0;
+      }
+    default:
+      return 1;
+  }
+  return 1;
 }
 
 // Using this method REQUIRES the usage of a event filter.
