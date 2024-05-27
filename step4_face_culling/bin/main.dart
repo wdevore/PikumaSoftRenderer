@@ -21,7 +21,7 @@ int prevRenderMode = 0;
 // This filter is needed because calling sdlDelay locks the thread
 // while delaying which prevents any input polling. This causes
 // keypress events to be lost making it diffult to exit the app.
-int myEventFilter(Pointer<Uint8> running, Pointer<SdlEvent> event) {
+int myEventFilter(Pointer<Uint32> running, Pointer<SdlEvent> event) {
   switch (event.type) {
     case SDL_QUIT:
       running.value = 0;
@@ -97,7 +97,12 @@ int run() {
 
   var running = calloc<Uint8>();
   running.value = 1;
-  sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
+
+  sdlSetEventFilter(
+      Pointer.fromFunction<Int32 Function(Pointer<Uint32>, Pointer<SdlEvent>)>(
+              myEventFilter, 0)
+          .cast(),
+      running);
 
   // Set camera position by moving away from origin
   // model.camera.setValues(0.0, 0.0, -5.0);
