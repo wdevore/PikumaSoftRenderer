@@ -174,7 +174,11 @@ int run() {
 
   var running = calloc<Uint8>();
   running.value = 1;
-  sdlSetEventFilter(Pointer.fromFunction(myEventFilter, 0), running);
+  sdlSetEventFilter(
+      Pointer.fromFunction<Int32 Function(Pointer<Uint8>, Pointer<SdlEvent>)>(
+              myEventFilter, 0)
+          .cast(),
+      running);
 
   int previousFrameTime = 0;
 
